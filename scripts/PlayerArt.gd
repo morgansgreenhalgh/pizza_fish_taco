@@ -174,9 +174,7 @@ func _build() -> void:
 func _build_sprite_art() -> bool:
 	for frame_name in PLAYER_FRAME_NAMES:
 		var path: String = PLAYER_FRAME_DIR + str(frame_name) + ".png"
-		if not ResourceLoader.exists(path):
-			continue
-		var texture := load(path)
+		var texture := _load_png_texture(path)
 		if texture != null:
 			sprite_textures[frame_name] = texture
 	if not sprite_textures.has("idle_0"):
@@ -189,6 +187,18 @@ func _build_sprite_art() -> bool:
 	sprite.position = Vector2(0, 2)
 	add_child(sprite)
 	return true
+
+func _load_png_texture(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		var imported_texture := load(path)
+		if imported_texture is Texture2D:
+			return imported_texture
+
+	var image := Image.new()
+	var error := image.load(ProjectSettings.globalize_path(path))
+	if error != OK:
+		return null
+	return ImageTexture.create_from_image(image)
 
 func _apply_sprite_frame(body_rot: float, leg_offset: float) -> void:
 	var sequence := _sprite_sequence_for(current_animation)
