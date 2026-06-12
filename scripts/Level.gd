@@ -14,6 +14,12 @@ const InputSetupScript := preload("res://scripts/InputSetup.gd")
 const GAME_HEIGHT := 540
 const WORLD_WIDTH := 3200
 const GROUND_Y := 452
+const BACKGROUND_PLATES := [
+	"res://assets/levels/snack_city_streets/source/snack_city_panel_0.jpg",
+	"res://assets/levels/snack_city_streets/source/snack_city_panel_1.jpg",
+	"res://assets/levels/snack_city_streets/source/snack_city_panel_2.jpg",
+	"res://assets/levels/snack_city_streets/source/snack_city_panel_3.jpg",
+]
 
 var player: Node
 var hud: CanvasLayer
@@ -31,6 +37,7 @@ var pause_layer: CanvasLayer
 var level_clear_layer: CanvasLayer
 var gameplay_paused := false
 var level_ending := false
+var using_illustrated_background := false
 var waves := [
 	{"trigger": 260.0, "gate": 850.0, "spawned": false, "enemies": [{"kind": "burger_grunt", "x": 640.0}, {"kind": "burger_grunt", "x": 770.0}]},
 	{"trigger": 880.0, "gate": 1390.0, "spawned": false, "enemies": [{"kind": "burger_grunt", "x": 1180.0}, {"kind": "fry_goblin", "x": 1280.0}]},
@@ -330,6 +337,8 @@ func _wait_for_start() -> void:
 			return
 
 func _build_background() -> void:
+	if _build_illustrated_background():
+		return
 	_add_rect(Vector2(0, 0), Vector2(WORLD_WIDTH, GAME_HEIGHT), Color("#130512"))
 	_add_rect(Vector2(0, 64), Vector2(WORLD_WIDTH, 236), Color("#2a081d"))
 	_add_rect(Vector2(0, 300), Vector2(WORLD_WIDTH, 92), Color("#12030f"))
@@ -389,12 +398,54 @@ func _build_ground() -> void:
 	collision.shape = rect
 	collision.position = Vector2(WORLD_WIDTH / 2.0, GROUND_Y + 42)
 	ground.add_child(collision)
+	if using_illustrated_background:
+		_add_rect(Vector2(0, GROUND_Y - 3), Vector2(WORLD_WIDTH, 6), Color(0.0, 0.0, 0.0, 0.22))
+		_add_rect(Vector2(0, GROUND_Y + 2), Vector2(WORLD_WIDTH, 3), Color(1.0, 0.75, 0.18, 0.36))
+		return
 	_add_rect(Vector2(0, GROUND_Y), Vector2(WORLD_WIDTH, 86), Color("#7b3422"), Color("#efac4f"), 4)
 	_add_rect(Vector2(0, GROUND_Y), Vector2(WORLD_WIDTH, 10), Color("#ffcf55"), Color("#1b0908"), 2)
 	for i in range(34):
 		var x := i * 96
 		_add_rect(Vector2(x + 12, GROUND_Y + 16), Vector2(64, 4), Color(0.22, 0.06, 0.03, 0.42))
 		_add_rect(Vector2(x + 42, GROUND_Y + 42), Vector2(72, 4), Color(0.22, 0.06, 0.03, 0.34))
+
+func _build_illustrated_background() -> bool:
+	var built_any := false
+	var x_cursor := 0.0
+	for plate_path in BACKGROUND_PLATES:
+		var texture := _load_texture(plate_path)
+		if texture == null:
+			continue
+		var texture_size := texture.get_size()
+		if texture_size.x <= 0 or texture_size.y <= 0:
+			continue
+		var scale_size := float(GAME_HEIGHT) / texture_size.y
+		var panel_width := texture_size.x * scale_size
+		var sprite := Sprite2D.new()
+		sprite.texture = texture
+		sprite.centered = true
+		sprite.scale = Vector2(scale_size, scale_size)
+		sprite.position = Vector2(x_cursor + panel_width * 0.5, GAME_HEIGHT * 0.5)
+		add_child(sprite)
+		x_cursor += panel_width
+		built_any = true
+	using_illustrated_background = built_any
+	if built_any:
+		_add_rect(Vector2(0, 0), Vector2(WORLD_WIDTH, GAME_HEIGHT), Color(0.02, 0.0, 0.02, 0.08))
+		_add_rect(Vector2(0, 0), Vector2(WORLD_WIDTH, 104), Color(0.0, 0.0, 0.0, 0.18))
+		_add_rect(Vector2(0, GROUND_Y - 110), Vector2(WORLD_WIDTH, 120), Color(0.0, 0.0, 0.0, 0.08))
+	return built_any
+
+func _load_texture(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		var imported_texture := load(path)
+		if imported_texture is Texture2D:
+			return imported_texture
+	var image := Image.new()
+	var error := image.load(ProjectSettings.globalize_path(path))
+	if error != OK:
+		return null
+	return ImageTexture.create_from_image(image)
 
 func _spawn_hit_spark(pos: Vector2) -> void:
 	var spark := Polygon2D.new()

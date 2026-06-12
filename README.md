@@ -24,7 +24,7 @@ Godot Phase 1 slice:
 - Boss intro and multiple boss attack patterns
 - Imported Pizza Fish Taco animation frames with procedural fallback
 - Imported Burger Grunt, Fry Goblin, and Big Bad Burger animation frames
-- Polished procedural Snack City Streets background with neon signs and food props
+- Illustrated Snack City Streets background plates
 - Health, sauce, and score pickups
 - Polished arcade-style HUD, ability bar, menu, and game-over screens
 - Pause menu with resume, restart, return-to-menu, and controls
@@ -84,7 +84,7 @@ Controller:
 - Tune enemy AI spacing and boss attacks after hands-on play
 - Tune Pizza Fish Taco sprite animation offsets and timing after hands-on play
 - Tune imported enemy and boss sprite offsets, scale, and attack pose timing
-- Add true parallax layers and authored Snack City prop sprites
+- Split Snack City into true parallax layers and foreground prop sprites
 - Add richer pickup drop tuning and pickup-specific art
 - Add controller navigation for pause/menu choices
 

@@ -39,7 +39,7 @@ Controller:
 - Smarter enemy spacing, cooldown retreat, interruptible windups, and multiple boss attacks
 - Imported Pizza Fish Taco animation frames with procedural fallback and strike-frame hitbox timing
 - Imported Burger Grunt, Fry Goblin, and Big Bad Burger animation frames
-- Polished procedural Snack City Streets background with neon signs and food props
+- Illustrated Snack City Streets background plates
 - Health, sauce, and score pickups
 - Polished arcade-style HUD, ability bar, menu, and game-over screens
 - Pause menu and level-clear scoring panel
@@ -65,4 +65,4 @@ Build out imported sprite sheets:
 - `Player.tscn`: tune offsets, hit poses, and timing for the imported Pizza Fish Taco frames
 - `Enemy.tscn`: tune Burger Grunt and Fry Goblin frames
 - `Boss.tscn`: tune Big Bad Burger attack poses, scale, and impact timing
-- `Level.tscn`: true parallax layers and authored Snack City prop sprites
+- `Level.tscn`: split background plates into true parallax layers and foreground prop sprites

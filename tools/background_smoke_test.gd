@@ -8,27 +8,27 @@ func _run() -> void:
 	root.add_child(level)
 	await process_frame
 
-	var labels := _collect_labels(level)
-	if not labels.has("SNACK CITY"):
-		push_error("background_smoke_test: missing Snack City neon sign")
+	if not level.using_illustrated_background:
+		push_error("background_smoke_test: illustrated background plates did not load")
 		quit(1)
 		return
-	if not labels.has("BOSS BITES"):
-		push_error("background_smoke_test: missing boss district sign")
+	var background_sprites := _count_background_sprites(level)
+	if background_sprites < 4:
+		push_error("background_smoke_test: expected four illustrated background plates")
 		quit(1)
 		return
-	if level.get_child_count() < 260:
-		push_error("background_smoke_test: background detail count unexpectedly low")
+	if level.get_child_count() < 12:
+		push_error("background_smoke_test: level child count unexpectedly low")
 		quit(1)
 		return
 
-	print("background_smoke_test: labels=", labels, " child_count=", level.get_child_count())
+	print("background_smoke_test: illustrated=true plates=", background_sprites, " child_count=", level.get_child_count())
 	quit()
 
-func _collect_labels(root_node: Node) -> Array[String]:
-	var texts: Array[String] = []
+func _count_background_sprites(root_node: Node) -> int:
+	var total := 0
 	for child in root_node.get_children():
-		if child is Label:
-			texts.append(child.text)
-		texts.append_array(_collect_labels(child))
-	return texts
+		if child is Sprite2D:
+			total += 1
+		total += _count_background_sprites(child)
+	return total
