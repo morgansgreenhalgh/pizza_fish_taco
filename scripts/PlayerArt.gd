@@ -1,7 +1,24 @@
 extends Node2D
 class_name PlayerArt
 
-const PLAYER_IDLE_TEXTURE := "res://assets/characters/pizza_fish_taco/pizza_fish_taco_idle.png"
+const PLAYER_FRAME_DIR := "res://assets/characters/pizza_fish_taco/frames/"
+const PLAYER_FRAME_NAMES := [
+	"idle_0",
+	"idle_1",
+	"idle_2",
+	"run_0",
+	"run_1",
+	"run_2",
+	"run_3",
+	"bite_0",
+	"bite_1",
+	"sauce_0",
+	"hurt_0",
+	"spin_0",
+	"spin_1",
+	"crouch_0",
+	"jump_0",
+]
 
 var facing := 1
 var current_animation := ""
@@ -11,6 +28,7 @@ var frame_elapsed := 0.0
 var parts := {}
 var using_sprite_art := false
 var sprite: Sprite2D
+var sprite_textures := {}
 
 func _ready() -> void:
 	_build()
@@ -123,8 +141,7 @@ func _apply_frame(frame: Dictionary) -> void:
 	var fin_rot: float = frame.get("fin_rot", 0.0)
 	var leg_offset: float = frame.get("leg_offset", 0.0)
 	if using_sprite_art:
-		sprite.rotation_degrees = body_rot
-		sprite.position.y = 2 + leg_offset * 0.25
+		_apply_sprite_frame(body_rot, leg_offset)
 		return
 	parts.body.rotation_degrees = body_rot
 	parts.pizza.rotation_degrees = body_rot * 0.55
@@ -155,18 +172,56 @@ func _build() -> void:
 	parts.right_foot = _add_ellipse(Vector2(37, 67), Vector2(28, 10), Color("#ff9b7a"), true)
 
 func _build_sprite_art() -> bool:
-	if not ResourceLoader.exists(PLAYER_IDLE_TEXTURE):
+	for frame_name in PLAYER_FRAME_NAMES:
+		var path: String = PLAYER_FRAME_DIR + str(frame_name) + ".png"
+		if not ResourceLoader.exists(path):
+			continue
+		var texture := load(path)
+		if texture != null:
+			sprite_textures[frame_name] = texture
+	if not sprite_textures.has("idle_0"):
 		return false
-	var texture := load(PLAYER_IDLE_TEXTURE)
-	if texture == null:
-		return false
+
 	using_sprite_art = true
 	sprite = Sprite2D.new()
-	sprite.texture = texture
+	sprite.texture = sprite_textures.idle_0
 	sprite.centered = true
 	sprite.position = Vector2(0, 2)
 	add_child(sprite)
 	return true
+
+func _apply_sprite_frame(body_rot: float, leg_offset: float) -> void:
+	var sequence := _sprite_sequence_for(current_animation)
+	if not sequence.is_empty():
+		var texture_key: String = sequence[min(frame_index, sequence.size() - 1)]
+		if sprite_textures.has(texture_key):
+			sprite.texture = sprite_textures[texture_key]
+	sprite.rotation_degrees = body_rot
+	sprite.position.y = 2 + leg_offset * 0.25
+
+func _sprite_sequence_for(animation_name: String) -> Array:
+	match animation_name:
+		"idle":
+			return ["idle_0", "idle_1", "idle_2"]
+		"run":
+			return ["run_0", "run_1", "run_2", "run_3"]
+		"jump", "fall":
+			return ["jump_0"]
+		"hurt":
+			return ["hurt_0", "hurt_0"]
+		"death":
+			return ["crouch_0"]
+		"light_1":
+			return ["idle_0", "bite_0", "idle_0"]
+		"light_2":
+			return ["idle_1", "bite_1", "idle_0"]
+		"light_3":
+			return ["idle_2", "sauce_0", "idle_0"]
+		"heavy":
+			return ["crouch_0", "bite_1", "idle_0"]
+		"sauce_spin":
+			return ["spin_0", "spin_1", "spin_0", "spin_1", "idle_0"]
+	return ["idle_0"]
 
 func _add_poly(points: PackedVector2Array, color: Color, outlined: bool) -> Node2D:
 	var holder := Node2D.new()

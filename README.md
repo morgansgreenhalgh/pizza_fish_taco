@@ -22,7 +22,7 @@ Godot Phase 1 slice:
 - Wave gates and boss arena gate
 - Enemy health bars, damage numbers, hit sparks, crumb bursts, hit pause, camera shake
 - Boss intro and multiple boss attack patterns
-- Imported Pizza Fish Taco idle art with animation-ready procedural fallback
+- Imported Pizza Fish Taco animation frames with procedural fallback
 - Health, sauce, and score pickups
 - Pause menu with resume, restart, return-to-menu, and controls
 - Level-clear panel with score and lives bonus
@@ -75,7 +75,7 @@ Controller:
 ## Next Phase 1 Work
 
 - Tune enemy AI spacing and boss attacks after hands-on play
-- Turn the Pizza Fish Taco character sheet into a full animation set
+- Tune Pizza Fish Taco sprite animation offsets and timing after hands-on play
 - Replace enemy placeholders with imported Burger Grunt and Fry Goblin sprite sheets
 - Add richer pickup drop tuning and pickup-specific art
 - Add controller navigation for pause menu choices
