@@ -330,31 +330,53 @@ func _wait_for_start() -> void:
 			return
 
 func _build_background() -> void:
-	_add_rect(Vector2(0, 0), Vector2(WORLD_WIDTH, GAME_HEIGHT), Color("#180716"))
-	_add_rect(Vector2(0, 88), Vector2(WORLD_WIDTH, 180), Color(0.29, 0.06, 0.16, 0.72))
-	for i in range(18):
-		var x := i * 190 + 40
-		_add_circle(Vector2(x, 210 + (i % 4) * 18), 62, Color(0.6, 0.11, 0.12, 0.22))
-		_add_circle(Vector2(x + 44, 238), 18, Color(1.0, 0.39, 0.15, 0.35))
-	for i in range(11):
-		var x := i * 330 + 70
-		_add_rect(Vector2(x - 86, 18), Vector2(172, 278), Color("#2c1020"))
-		_add_rect(Vector2(x - 66, 140), Vector2(132, 18), Color(0.91, 0.25, 0.14, 0.6))
-		for j in range(3):
-			_add_rect(Vector2(x - 55 + j * 43, 228), Vector2(24, 82), Color(0.06, 0.02, 0.05, 0.7))
-		_add_circle(Vector2(x + 58, 184), 12, Color(1.0, 0.83, 0.28, 0.55))
-	for i in range(9):
-		var x := i * 390 + 120
-		_add_rect(Vector2(x - 75, GROUND_Y - 156), Vector2(150, 74), Color("#6b331c"), Color("#1b0908"), 5)
-		_add_label("HOT SAUCE" if i % 2 == 0 else "EXTRA CHEESE", Vector2(x - 60, GROUND_Y - 134), 16, Color("#ff9f39"))
-	for i in range(19):
-		var x := i * 180 + 50
-		_add_circle(Vector2(x, 382 + (i % 3) * 12), 44, Color(0.49, 0.13, 0.1, 0.72))
-		_add_rect(Vector2(x - 38, GROUND_Y - 48), Vector2(126, 10), Color("#ffc44d"))
-		_add_rect(Vector2(x - 38, GROUND_Y - 38), Vector2(126, 48), Color("#b54b25"), Color("#33100b"), 2)
-		_add_circle(Vector2(x - 74, GROUND_Y - 23), 7, Color("#ffe071"))
+	_add_rect(Vector2(0, 0), Vector2(WORLD_WIDTH, GAME_HEIGHT), Color("#130512"))
+	_add_rect(Vector2(0, 64), Vector2(WORLD_WIDTH, 236), Color("#2a081d"))
+	_add_rect(Vector2(0, 300), Vector2(WORLD_WIDTH, 92), Color("#12030f"))
+	_add_circle(Vector2(430, 118), 150, Color(0.96, 0.16, 0.1, 0.12))
+	_add_circle(Vector2(1650, 142), 190, Color(0.19, 0.82, 1.0, 0.09))
+	_add_circle(Vector2(2520, 128), 170, Color(0.95, 0.76, 0.1, 0.1))
+
+	for i in range(14):
+		var x := i * 260 - 36
+		var height := 190 + (i % 5) * 24
+		_add_rect(Vector2(x, 92 + 224 - height), Vector2(190, height), Color("#21091b"))
+		_add_window_grid(Vector2(x + 22, 126), 5, 5, Color(0.07, 0.78, 0.9, 0.32))
+		if i % 3 == 0:
+			_add_neon_sign(Vector2(x + 28, 106), Vector2(92, 30), "EAT", Color("#37e6ff"))
+
+	for i in range(10):
+		var x := i * 350 + 60
+		_add_rect(Vector2(x, 154), Vector2(220, 182), Color("#3b1027"))
+		_add_rect(Vector2(x, 154), Vector2(220, 16), Color("#5b1837"))
+		_add_window_grid(Vector2(x + 22, 184), 4, 3, Color(1.0, 0.27, 0.15, 0.42))
+		_add_drips(Vector2(x + 18, 170), 5, Color("#ff8b1a"))
+		if i % 2 == 0:
+			_add_neon_sign(Vector2(x + 36, 112), Vector2(144, 38), "SNACK", Color("#ff4d2a"))
+		else:
+			_add_neon_sign(Vector2(x + 44, 116), Vector2(128, 34), "SAUCE", Color("#ffe964"))
+
+	for i in range(8):
+		var x := i * 430 + 120
+		_add_rect(Vector2(x - 74, GROUND_Y - 170), Vector2(190, 88), Color("#6b331c"), Color("#1b0908"), 5)
+		_add_rect(Vector2(x - 64, GROUND_Y - 160), Vector2(170, 18), Color("#9d3b20"))
+		_add_label("HOT SAUCE" if i % 2 == 0 else "EXTRA CHEESE", Vector2(x - 52, GROUND_Y - 132), 15, Color("#ffb24a"))
+		_add_circle(Vector2(x + 124, GROUND_Y - 102), 22, Color(1.0, 0.19, 0.09, 0.24))
+
+	for i in range(17):
+		var x := i * 205 + 42
+		_add_circle(Vector2(x, 390 + (i % 3) * 10), 52, Color(0.5, 0.12, 0.09, 0.72))
+		_add_rect(Vector2(x - 42, GROUND_Y - 54), Vector2(136, 10), Color("#ffd159"), Color("#1b0908"), 1)
+		_add_rect(Vector2(x - 42, GROUND_Y - 44), Vector2(136, 52), Color("#b94d25"), Color("#33100b"), 2)
+		_add_rect(Vector2(x - 38, GROUND_Y - 39), Vector2(128, 10), Color("#e05a2d"))
+		_add_circle(Vector2(x - 76, GROUND_Y - 24), 7, Color("#ffe071"))
 		_add_circle(Vector2(x + 12, GROUND_Y - 18), 6, Color("#ef3322"))
-	_add_label("SNACK CITY STREETS", Vector2(220, 340), 24, Color("#ffe964"))
+
+	_add_neon_sign(Vector2(210, 338), Vector2(272, 48), "SNACK CITY", Color("#ffe964"))
+	_add_neon_sign(Vector2(2340, 326), Vector2(212, 42), "BOSS BITES", Color("#ff3847"))
+	_add_pizza_slice(Vector2(720, 358), 0.8)
+	_add_taco_icon(Vector2(1510, 350), 0.72)
+	_add_sauce_bottle(Vector2(2050, 356), 0.72)
 
 func _build_ground() -> void:
 	var ground := StaticBody2D.new()
@@ -369,6 +391,10 @@ func _build_ground() -> void:
 	ground.add_child(collision)
 	_add_rect(Vector2(0, GROUND_Y), Vector2(WORLD_WIDTH, 86), Color("#7b3422"), Color("#efac4f"), 4)
 	_add_rect(Vector2(0, GROUND_Y), Vector2(WORLD_WIDTH, 10), Color("#ffcf55"), Color("#1b0908"), 2)
+	for i in range(34):
+		var x := i * 96
+		_add_rect(Vector2(x + 12, GROUND_Y + 16), Vector2(64, 4), Color(0.22, 0.06, 0.03, 0.42))
+		_add_rect(Vector2(x + 42, GROUND_Y + 42), Vector2(72, 4), Color(0.22, 0.06, 0.03, 0.34))
 
 func _spawn_hit_spark(pos: Vector2) -> void:
 	var spark := Polygon2D.new()
@@ -464,6 +490,78 @@ func _add_circle(pos: Vector2, radius: float, color: Color) -> void:
 	poly.polygon = points
 	poly.color = color
 	add_child(poly)
+
+func _add_poly(points: PackedVector2Array, color: Color, outline := Color.TRANSPARENT, outline_width := 0) -> Polygon2D:
+	var poly := Polygon2D.new()
+	poly.polygon = points
+	poly.color = color
+	add_child(poly)
+	if outline_width > 0:
+		var line := Line2D.new()
+		line.points = points
+		line.closed = true
+		line.width = outline_width
+		line.default_color = outline
+		add_child(line)
+	return poly
+
+func _add_line(points: PackedVector2Array, color: Color, width := 3.0) -> Line2D:
+	var line := Line2D.new()
+	line.points = points
+	line.width = width
+	line.default_color = color
+	add_child(line)
+	return line
+
+func _add_window_grid(pos: Vector2, columns: int, rows: int, glow: Color) -> void:
+	for y in range(rows):
+		for x in range(columns):
+			if (x + y) % 4 == 0:
+				continue
+			var window_pos := pos + Vector2(x * 28, y * 24)
+			_add_rect(window_pos, Vector2(16, 10), Color(glow.r, glow.g, glow.b, 0.18))
+			_add_rect(window_pos + Vector2(2, 2), Vector2(12, 6), glow)
+
+func _add_neon_sign(pos: Vector2, size: Vector2, text: String, glow: Color) -> void:
+	_add_rect(pos - Vector2(5, 5), size + Vector2(10, 10), Color(glow.r, glow.g, glow.b, 0.12))
+	_add_rect(pos, size, Color("#120611"), glow, 3)
+	_add_label(text, pos + Vector2(12, 6), 15, glow)
+	_add_line(PackedVector2Array([pos + Vector2(8, size.y - 7), pos + Vector2(size.x - 8, size.y - 7)]), Color(glow.r, glow.g, glow.b, 0.42), 2)
+
+func _add_drips(pos: Vector2, count: int, color: Color) -> void:
+	for i in range(count):
+		var x := pos.x + i * 32 + (i % 2) * 8
+		var length := 18 + (i % 3) * 9
+		_add_rect(Vector2(x, pos.y), Vector2(9, length), color)
+		_add_circle(Vector2(x + 4, pos.y + length), 6, color)
+
+func _add_pizza_slice(pos: Vector2, scale_size: float) -> void:
+	var points := PackedVector2Array([
+		pos + Vector2(0, -34) * scale_size,
+		pos + Vector2(62, 20) * scale_size,
+		pos + Vector2(-58, 24) * scale_size,
+	])
+	_add_poly(points, Color("#ffd15b"), Color("#160707"), 4)
+	_add_line(PackedVector2Array([points[1], points[2]]), Color("#f14120"), 6)
+	_add_circle(pos + Vector2(-18, 2) * scale_size, 7 * scale_size, Color("#ef3322"))
+	_add_circle(pos + Vector2(18, 5) * scale_size, 7 * scale_size, Color("#ef3322"))
+
+func _add_taco_icon(pos: Vector2, scale_size: float) -> void:
+	var points := PackedVector2Array()
+	for i in range(18):
+		var angle := PI + PI * i / 17.0
+		points.append(pos + Vector2(cos(angle) * 62, sin(angle) * 42) * scale_size)
+	points.append(pos + Vector2(62, 8) * scale_size)
+	points.append(pos + Vector2(-62, 8) * scale_size)
+	_add_poly(points, Color("#f0b14b"), Color("#160707"), 4)
+	_add_circle(pos + Vector2(-20, -8) * scale_size, 7 * scale_size, Color("#69ff7b"))
+	_add_circle(pos + Vector2(12, -10) * scale_size, 7 * scale_size, Color("#ef3322"))
+
+func _add_sauce_bottle(pos: Vector2, scale_size: float) -> void:
+	_add_rect(pos + Vector2(-18, -44) * scale_size, Vector2(36, 18) * scale_size, Color("#8b1838"), Color("#160707"), 3)
+	_add_rect(pos + Vector2(-24, -26) * scale_size, Vector2(48, 72) * scale_size, Color("#e63b20"), Color("#160707"), 4)
+	_add_rect(pos + Vector2(-16, -6) * scale_size, Vector2(32, 20) * scale_size, Color("#ffe071"))
+	_add_circle(pos + Vector2(0, 28) * scale_size, 8 * scale_size, Color("#ff9f39"))
 
 func _add_label(text: String, pos: Vector2, size: int, color: Color) -> Label:
 	var label := Label.new()

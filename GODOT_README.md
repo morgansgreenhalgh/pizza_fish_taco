@@ -39,15 +39,17 @@ Controller:
 - Smarter enemy spacing, cooldown retreat, interruptible windups, and multiple boss attacks
 - Imported Pizza Fish Taco animation frames with procedural fallback and strike-frame hitbox timing
 - Imported Burger Grunt, Fry Goblin, and Big Bad Burger animation frames
+- Polished procedural Snack City Streets background with neon signs and food props
 - Health, sauce, and score pickups
 - Pause menu and level-clear scoring panel
-- Generated placeholder level and pickup art, ready to be replaced by authored sprites later
+- Generated placeholder pickup art, ready to be replaced by authored sprites later
 
 ## Validation
 
 ```powershell
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --quit-after 3
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' 'res://scenes/Level.tscn' --quit-after 4
+& 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/background_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/player_art_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/enemy_art_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/combat_smoke_test.gd'
@@ -61,4 +63,4 @@ Build out imported sprite sheets:
 - `Player.tscn`: tune offsets, hit poses, and timing for the imported Pizza Fish Taco frames
 - `Enemy.tscn`: tune Burger Grunt and Fry Goblin frames
 - `Boss.tscn`: tune Big Bad Burger attack poses, scale, and impact timing
-- `Level.tscn`: layered background art and tile/sprite props
+- `Level.tscn`: true parallax layers and authored Snack City prop sprites
