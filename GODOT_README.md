@@ -65,4 +65,5 @@ Build out imported sprite sheets:
 - `Player.tscn`: tune offsets, hit poses, and timing for the imported Pizza Fish Taco frames
 - `Enemy.tscn`: tune Burger Grunt and Fry Goblin frames
 - `Boss.tscn`: tune Big Bad Burger attack poses, scale, and impact timing
+- `Level.tscn`: review the illustrated background in motion and tune contrast/readability around active combat lanes
 - `Level.tscn`: split background plates into true parallax layers and foreground prop sprites

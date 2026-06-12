@@ -118,3 +118,5 @@ powershell -ExecutionPolicy Bypass -Command "& { .\tools\slice_enemy_sheet.ps1 -
 `scripts/Level.gd` now prefers four illustrated Snack City Streets background plates in `levels/snack_city_streets/source/`. If those files are missing, it falls back to the older procedural background.
 
 The gameplay ground collision is still code-native so visual plate changes do not affect combat or movement.
+
+The current plates are flat full-screen illustrations. The next art pass should tune combat-lane readability, then split the street into parallax background layers and foreground prop sprites.

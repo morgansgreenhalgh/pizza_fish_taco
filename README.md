@@ -81,6 +81,7 @@ Controller:
 
 ## Next Phase 1 Work
 
+- Review the illustrated background in motion and tune contrast/readability around active combat lanes
 - Tune enemy AI spacing and boss attacks after hands-on play
 - Tune Pizza Fish Taco sprite animation offsets and timing after hands-on play
 - Tune imported enemy and boss sprite offsets, scale, and attack pose timing
