@@ -20,7 +20,66 @@ $frameNames = @(
 function Is-BackgroundPixel($pixel) {
     $max = [Math]::Max($pixel.R, [Math]::Max($pixel.G, $pixel.B))
     $min = [Math]::Min($pixel.R, [Math]::Min($pixel.G, $pixel.B))
-    return ($min -ge 205 -and ($max - $min) -le 18)
+    $spread = $max - $min
+    return (($min -ge 185 -and $spread -le 52) -or ($min -ge 225 -and $spread -le 72))
+}
+
+function Remove-BackgroundSpeckles($cell, $transparent) {
+    $visited = New-Object 'bool[,]' $cell.Width, $cell.Height
+
+    for ($startY = 0; $startY -lt $cell.Height; $startY++) {
+        for ($startX = 0; $startX -lt $cell.Width; $startX++) {
+            if ($transparent[$startX, $startY] -or $visited[$startX, $startY]) {
+                continue
+            }
+            if (-not (Is-BackgroundPixel $cell.GetPixel($startX, $startY))) {
+                continue
+            }
+
+            $component = [System.Collections.Generic.List[System.Drawing.Point]]::new()
+            $queue = [System.Collections.Generic.Queue[System.Drawing.Point]]::new()
+            $queue.Enqueue([System.Drawing.Point]::new($startX, $startY))
+            $touchesTransparent = $false
+
+            while ($queue.Count -gt 0) {
+                $point = $queue.Dequeue()
+                if ($point.X -lt 0 -or $point.X -ge $cell.Width -or $point.Y -lt 0 -or $point.Y -ge $cell.Height) {
+                    continue
+                }
+                if ($visited[$point.X, $point.Y] -or $transparent[$point.X, $point.Y]) {
+                    continue
+                }
+                if (-not (Is-BackgroundPixel $cell.GetPixel($point.X, $point.Y))) {
+                    continue
+                }
+
+                $visited[$point.X, $point.Y] = $true
+                $component.Add($point)
+
+                for ($ny = $point.Y - 1; $ny -le $point.Y + 1; $ny++) {
+                    for ($nx = $point.X - 1; $nx -le $point.X + 1; $nx++) {
+                        if ($nx -eq $point.X -and $ny -eq $point.Y) {
+                            continue
+                        }
+                        if ($nx -lt 0 -or $nx -ge $cell.Width -or $ny -lt 0 -or $ny -ge $cell.Height) {
+                            continue
+                        }
+                        if ($transparent[$nx, $ny]) {
+                            $touchesTransparent = $true
+                        } elseif (-not $visited[$nx, $ny]) {
+                            $queue.Enqueue([System.Drawing.Point]::new($nx, $ny))
+                        }
+                    }
+                }
+            }
+
+            if ($touchesTransparent) {
+                foreach ($point in $component) {
+                    $transparent[$point.X, $point.Y] = $true
+                }
+            }
+        }
+    }
 }
 
 function Export-Frame($sourceImage, $rect, $name, $outputDir, $targetHeight) {
@@ -57,7 +116,13 @@ function Export-Frame($sourceImage, $rect, $name, $outputDir, $targetHeight) {
         $queue.Enqueue([System.Drawing.Point]::new($point.X - 1, $point.Y))
         $queue.Enqueue([System.Drawing.Point]::new($point.X, $point.Y + 1))
         $queue.Enqueue([System.Drawing.Point]::new($point.X, $point.Y - 1))
+        $queue.Enqueue([System.Drawing.Point]::new($point.X + 1, $point.Y + 1))
+        $queue.Enqueue([System.Drawing.Point]::new($point.X - 1, $point.Y - 1))
+        $queue.Enqueue([System.Drawing.Point]::new($point.X + 1, $point.Y - 1))
+        $queue.Enqueue([System.Drawing.Point]::new($point.X - 1, $point.Y + 1))
     }
+
+    Remove-BackgroundSpeckles $cell $transparent
 
     $minX = $rect.Width
     $minY = $rect.Height

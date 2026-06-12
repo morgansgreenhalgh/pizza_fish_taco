@@ -36,7 +36,7 @@ func _ready() -> void:
 
 func set_facing(value: int) -> void:
 	facing = value
-	scale.x = facing
+	scale.x = -facing if using_sprite_art else facing
 
 func play(animation_name: String, force := false) -> void:
 	if current_animation == animation_name and not force:
@@ -136,7 +136,8 @@ func _frames_for(animation_name: String) -> Array:
 
 func _apply_frame(frame: Dictionary) -> void:
 	position = frame.get("root_pos", Vector2.ZERO)
-	scale = Vector2(facing, 1) * frame.get("root_scale", Vector2.ONE)
+	var visual_facing := -facing if using_sprite_art else facing
+	scale = Vector2(visual_facing, 1) * frame.get("root_scale", Vector2.ONE)
 	var body_rot: float = frame.get("body_rot", 0.0)
 	var fin_rot: float = frame.get("fin_rot", 0.0)
 	var leg_offset: float = frame.get("leg_offset", 0.0)

@@ -4,6 +4,7 @@
 *.translation
 export_presets.cfg
 .codex-remote-attachments/
+assets/characters/pizza_fish_taco/frames/_edge_check_*.png
 
 # Existing Phaser prototype outputs
 dist/
