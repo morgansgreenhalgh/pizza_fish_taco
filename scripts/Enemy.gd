@@ -8,7 +8,8 @@ signal attack_committed(enemy: Enemy)
 
 const GRAVITY := 1900.0
 const BURGER_GRUNT_FRAME_DIR := "res://assets/enemies/burger_grunt/frames/"
-const BURGER_GRUNT_FRAME_NAMES := [
+const FRY_GOBLIN_FRAME_DIR := "res://assets/enemies/fry_goblin/frames/"
+const ENEMY_FRAME_NAMES := [
 	"idle_0",
 	"walk_0",
 	"walk_1",
@@ -339,10 +340,11 @@ func _build_art() -> void:
 		_add_poly(PackedVector2Array([Vector2(44, -52), Vector2(20, -36), Vector2(37, -28)]), Color("#ff4d2a"), true)
 
 func _build_sprite_art() -> bool:
-	if kind != "burger_grunt":
+	var frame_dir := _frame_dir_for_kind()
+	if frame_dir == "":
 		return false
-	for frame_name in BURGER_GRUNT_FRAME_NAMES:
-		var path: String = BURGER_GRUNT_FRAME_DIR + str(frame_name) + ".png"
+	for frame_name in ENEMY_FRAME_NAMES:
+		var path: String = frame_dir + str(frame_name) + ".png"
 		var texture := _load_png_texture(path)
 		if texture != null:
 			sprite_textures[frame_name] = texture
@@ -357,6 +359,13 @@ func _build_sprite_art() -> bool:
 	art_root.add_child(sprite)
 	_set_art_pose("idle", true)
 	return true
+
+func _frame_dir_for_kind() -> String:
+	if kind == "burger_grunt":
+		return BURGER_GRUNT_FRAME_DIR
+	if kind == "fry_goblin":
+		return FRY_GOBLIN_FRAME_DIR
+	return ""
 
 func _load_png_texture(path: String) -> Texture2D:
 	if ResourceLoader.exists(path):
@@ -398,6 +407,12 @@ func _art_frames_for(pose: String) -> Array:
 				{"texture": "idle_0", "duration": 0.34},
 			]
 		"walk":
+			if kind == "fry_goblin":
+				return [
+					{"texture": "walk_0", "duration": 0.085},
+					{"texture": "run_0", "duration": 0.085},
+					{"texture": "walk_1", "duration": 0.085},
+				]
 			return [
 				{"texture": "walk_0", "duration": 0.12},
 				{"texture": "walk_1", "duration": 0.12},

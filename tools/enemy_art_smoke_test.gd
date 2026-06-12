@@ -20,10 +20,20 @@ func _run() -> void:
 	root.add_child(fry)
 	await process_frame
 
-	if fry.using_sprite_art:
-		push_error("enemy_art_smoke_test: Fry Goblin should remain procedural until its sheet exists")
+	if not fry.using_sprite_art:
+		push_error("enemy_art_smoke_test: Fry Goblin fell back to procedural shapes")
 		quit(1)
 		return
 
-	print("enemy_art_smoke_test: burger_sprite=true texture_size=", burger.sprite.texture.get_size(), " fry_sprite=false")
+	var boss = enemy_script.new()
+	boss.configure("big_bad_burger", null)
+	root.add_child(boss)
+	await process_frame
+
+	if boss.using_sprite_art:
+		push_error("enemy_art_smoke_test: Big Bad Burger should remain procedural until its sheet exists")
+		quit(1)
+		return
+
+	print("enemy_art_smoke_test: burger_sprite=true texture_size=", burger.sprite.texture.get_size(), " fry_sprite=true texture_size=", fry.sprite.texture.get_size(), " boss_sprite=false")
 	quit()

@@ -38,7 +38,7 @@ Controller:
 - Enemy health bars, damage numbers, hit sparks, crumb bursts, hit pause, and camera shake
 - Smarter enemy spacing, cooldown retreat, interruptible windups, and multiple boss attacks
 - Imported Pizza Fish Taco animation frames with procedural fallback and strike-frame hitbox timing
-- Imported Burger Grunt animation frames with procedural fallback for Fry Goblin and Big Bad Burger
+- Imported Burger Grunt and Fry Goblin animation frames with procedural fallback for Big Bad Burger
 - Health, sauce, and score pickups
 - Pause menu and level-clear scoring panel
 - Generated placeholder enemy and level art, ready to be replaced by sprite sheets later
@@ -59,6 +59,6 @@ Controller:
 
 Build out imported sprite sheets:
 - `Player.tscn`: tune offsets, hit poses, and timing for the imported Pizza Fish Taco frames
-- `Enemy.tscn`: tune Burger Grunt frames and add Fry Goblin animations
+- `Enemy.tscn`: tune Burger Grunt and Fry Goblin frames
 - `Boss.tscn`: Big Bad Burger animations
 - `Level.tscn`: layered background art and tile/sprite props

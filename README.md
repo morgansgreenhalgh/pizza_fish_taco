@@ -23,7 +23,7 @@ Godot Phase 1 slice:
 - Enemy health bars, damage numbers, hit sparks, crumb bursts, hit pause, camera shake
 - Boss intro and multiple boss attack patterns
 - Imported Pizza Fish Taco animation frames with procedural fallback
-- Imported Burger Grunt animation frames with procedural fallback for other enemies
+- Imported Burger Grunt and Fry Goblin animation frames with procedural boss fallback
 - Health, sauce, and score pickups
 - Pause menu with resume, restart, return-to-menu, and controls
 - Level-clear panel with score and lives bonus
@@ -79,7 +79,7 @@ Controller:
 
 - Tune enemy AI spacing and boss attacks after hands-on play
 - Tune Pizza Fish Taco sprite animation offsets and timing after hands-on play
-- Generate and wire Fry Goblin and Big Bad Burger sprite sheets
+- Generate and wire the Big Bad Burger boss sprite sheet
 - Add richer pickup drop tuning and pickup-specific art
 - Add controller navigation for pause menu choices
 
