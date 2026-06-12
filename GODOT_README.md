@@ -37,10 +37,10 @@ Controller:
 - Wave gates and boss arena flow
 - Enemy health bars, damage numbers, hit sparks, crumb bursts, hit pause, and camera shake
 - Smarter enemy spacing, cooldown retreat, interruptible windups, and multiple boss attacks
-- Animation-ready procedural player art with named states and strike-frame hitbox timing
+- Imported Pizza Fish Taco idle art with animation-ready procedural fallback and strike-frame hitbox timing
 - Health, sauce, and score pickups
 - Pause menu and level-clear scoring panel
-- Generated placeholder art built in scripts, ready to be replaced by sprite sheets later
+- Generated placeholder enemy and level art, ready to be replaced by sprite sheets later
 
 ## Validation
 
@@ -54,8 +54,8 @@ Controller:
 
 ## Suggested Next Godot Pass
 
-Replace generated placeholder drawing with imported sprite sheets:
-- `Player.tscn`: idle, run, jump, hurt, death, combo, heavy, Sauce Spin
+Build out imported sprite sheets:
+- `Player.tscn`: run, jump, hurt, death, combo, heavy, Sauce Spin
 - `Enemy.tscn`: Burger Grunt and Fry Goblin animations
 - `Boss.tscn`: Big Bad Burger animations
 - `Level.tscn`: layered background art and tile/sprite props

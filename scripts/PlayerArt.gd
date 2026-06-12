@@ -1,12 +1,16 @@
 extends Node2D
 class_name PlayerArt
 
+const PLAYER_IDLE_TEXTURE := "res://assets/characters/pizza_fish_taco/pizza_fish_taco_idle.png"
+
 var facing := 1
 var current_animation := ""
 var current_frames: Array = []
 var frame_index := 0
 var frame_elapsed := 0.0
 var parts := {}
+var using_sprite_art := false
+var sprite: Sprite2D
 
 func _ready() -> void:
 	_build()
@@ -118,6 +122,10 @@ func _apply_frame(frame: Dictionary) -> void:
 	var body_rot: float = frame.get("body_rot", 0.0)
 	var fin_rot: float = frame.get("fin_rot", 0.0)
 	var leg_offset: float = frame.get("leg_offset", 0.0)
+	if using_sprite_art:
+		sprite.rotation_degrees = body_rot
+		sprite.position.y = 2 + leg_offset * 0.25
+		return
 	parts.body.rotation_degrees = body_rot
 	parts.pizza.rotation_degrees = body_rot * 0.55
 	parts.fish.rotation_degrees = body_rot * 0.4
@@ -129,6 +137,8 @@ func _apply_frame(frame: Dictionary) -> void:
 	parts.right_foot.position.y = 67 - leg_offset
 
 func _build() -> void:
+	if _build_sprite_art():
+		return
 	parts.body = _add_poly([Vector2(-45, -32), Vector2(39, -32), Vector2(50, 20), Vector2(-38, 30), Vector2(-55, 0)], Color("#f0a736"), true)
 	parts.pizza = _add_poly([Vector2(-40, -38), Vector2(36, -66), Vector2(58, -28)], Color("#f14120"), true)
 	parts.left_fin = _add_poly([Vector2(-50, -16), Vector2(-82, 0), Vector2(-50, 18)], Color("#ffd86b"), true)
@@ -143,6 +153,20 @@ func _build() -> void:
 	parts.right_leg = _add_rect(Vector2(22, 45), Vector2(12, 34), Color("#c55a7e"), true)
 	parts.left_foot = _add_ellipse(Vector2(-39, 67), Vector2(28, 10), Color("#ff9b7a"), true)
 	parts.right_foot = _add_ellipse(Vector2(37, 67), Vector2(28, 10), Color("#ff9b7a"), true)
+
+func _build_sprite_art() -> bool:
+	if not ResourceLoader.exists(PLAYER_IDLE_TEXTURE):
+		return false
+	var texture := load(PLAYER_IDLE_TEXTURE)
+	if texture == null:
+		return false
+	using_sprite_art = true
+	sprite = Sprite2D.new()
+	sprite.texture = texture
+	sprite.centered = true
+	sprite.position = Vector2(0, 2)
+	add_child(sprite)
+	return true
 
 func _add_poly(points: PackedVector2Array, color: Color, outlined: bool) -> Node2D:
 	var holder := Node2D.new()

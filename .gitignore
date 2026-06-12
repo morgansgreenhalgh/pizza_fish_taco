@@ -3,6 +3,7 @@
 *.tmp
 *.translation
 export_presets.cfg
+.codex-remote-attachments/
 
 # Existing Phaser prototype outputs
 dist/

@@ -22,11 +22,11 @@ Godot Phase 1 slice:
 - Wave gates and boss arena gate
 - Enemy health bars, damage numbers, hit sparks, crumb bursts, hit pause, camera shake
 - Boss intro and multiple boss attack patterns
-- Animation-ready procedural player art with named states
+- Imported Pizza Fish Taco idle art with animation-ready procedural fallback
 - Health, sauce, and score pickups
 - Pause menu with resume, restart, return-to-menu, and controls
 - Level-clear panel with score and lives bonus
-- Procedural placeholder art ready to be replaced by sprite sheets
+- Placeholder enemy, pickup, and level art ready to be replaced by sprite sheets
 
 ## Run In Godot
 
@@ -75,7 +75,8 @@ Controller:
 ## Next Phase 1 Work
 
 - Tune enemy AI spacing and boss attacks after hands-on play
-- Replace procedural sprites with imported sprite sheets
+- Turn the Pizza Fish Taco character sheet into a full animation set
+- Replace enemy placeholders with imported Burger Grunt and Fry Goblin sprite sheets
 - Add richer pickup drop tuning and pickup-specific art
 - Add controller navigation for pause menu choices
 
@@ -83,6 +84,6 @@ Controller:
 
 - `scenes/` and `scripts/` are the Godot game.
 - `assets/` is the destination for authored art and sprite sheets.
-- `tools/` contains headless smoke tests.
+- `tools/` contains headless smoke tests and art-processing helpers.
 - `src/`, `package.json`, and Vite files are the earlier Phaser prototype.
 - `node_modules/`, `dist/`, and Godot cache folders are ignored.
