@@ -10,6 +10,7 @@ static func configure() -> void:
 		"heavy_attack": [KEY_K],
 		"special_attack": [KEY_L],
 		"start": [KEY_ENTER],
+		"pause": [KEY_ESCAPE],
 	}
 	for action in actions:
 		if not InputMap.has_action(action):
@@ -28,6 +29,7 @@ static func configure() -> void:
 	_add_joy_button("special_attack", JOY_BUTTON_Y)
 	_add_joy_button("special_attack", JOY_BUTTON_RIGHT_SHOULDER)
 	_add_joy_button("start", JOY_BUTTON_START)
+	_add_joy_button("pause", JOY_BUTTON_START)
 
 static func _add_joy_button(action: String, button_index: JoyButton) -> void:
 	var event := InputEventJoypadButton.new()

@@ -38,6 +38,8 @@ Controller:
 - Enemy health bars, damage numbers, hit sparks, crumb bursts, hit pause, and camera shake
 - Smarter enemy spacing, cooldown retreat, interruptible windups, and multiple boss attacks
 - Animation-ready procedural player art with named states and strike-frame hitbox timing
+- Health, sauce, and score pickups
+- Pause menu and level-clear scoring panel
 - Generated placeholder art built in scripts, ready to be replaced by sprite sheets later
 
 ## Validation
@@ -47,6 +49,7 @@ Controller:
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' 'res://scenes/Level.tscn' --quit-after 4
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/combat_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/boss_smoke_test.gd'
+& 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/pickup_smoke_test.gd'
 ```
 
 ## Suggested Next Godot Pass

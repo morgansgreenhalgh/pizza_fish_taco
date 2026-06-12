@@ -114,6 +114,14 @@ func add_score(value: int) -> void:
 	score_changed.emit(score)
 	emit_stats()
 
+func heal(value: int) -> void:
+	health = min(max_health, health + value)
+	emit_stats()
+
+func add_special(value: int) -> void:
+	special = min(max_special, special + value)
+	emit_stats()
+
 func emit_stats() -> void:
 	stats_changed.emit(health, max_health, lives, special, max_special)
 

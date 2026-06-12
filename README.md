@@ -23,6 +23,9 @@ Godot Phase 1 slice:
 - Enemy health bars, damage numbers, hit sparks, crumb bursts, hit pause, camera shake
 - Boss intro and multiple boss attack patterns
 - Animation-ready procedural player art with named states
+- Health, sauce, and score pickups
+- Pause menu with resume, restart, return-to-menu, and controls
+- Level-clear panel with score and lives bonus
 - Procedural placeholder art ready to be replaced by sprite sheets
 
 ## Run In Godot
@@ -66,14 +69,15 @@ Controller:
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' 'res://scenes/Level.tscn' --quit-after 4
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/combat_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/boss_smoke_test.gd'
+& 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/pickup_smoke_test.gd'
 ```
 
 ## Next Phase 1 Work
 
 - Tune enemy AI spacing and boss attacks after hands-on play
 - Replace procedural sprites with imported sprite sheets
-- Add pickups and a simple pause menu
-- Polish the first-level win flow
+- Add richer pickup drop tuning and pickup-specific art
+- Add controller navigation for pause menu choices
 
 ## Repository Notes
 

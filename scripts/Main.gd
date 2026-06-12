@@ -7,6 +7,7 @@ var current_level: Node
 var menu_root: CanvasLayer
 var game_over_root: CanvasLayer
 var last_score := 0
+var last_lives := 0
 
 func _ready() -> void:
 	InputSetupScript.configure()
@@ -41,11 +42,18 @@ func _start_level() -> void:
 	current_level = LevelScene.instantiate()
 	add_child(current_level)
 	current_level.level_finished.connect(_on_level_finished)
+	current_level.restart_requested.connect(_restart_level)
+	current_level.menu_requested.connect(_show_menu)
 
-func _on_level_finished(won: bool, score: int) -> void:
+func _on_level_finished(won: bool, score: int, lives: int) -> void:
 	last_score = score
+	last_lives = lives
 	_clear_level()
 	_show_game_over(won)
+
+func _restart_level() -> void:
+	_clear_level()
+	_start_level()
 
 func _show_game_over(won: bool) -> void:
 	game_over_root = CanvasLayer.new()
@@ -53,6 +61,8 @@ func _show_game_over(won: bool) -> void:
 	_add_rect(game_over_root, Vector2.ZERO, Vector2(960, 540), Color("#0e2316") if won else Color("#1a0710"))
 	_add_label(game_over_root, "SNACK CITY SAVED!" if won else "PIZZA FISH TACO FELL", Vector2(480, 170), 42, Color("#69ff7b") if won else Color("#ff5555"), true)
 	_add_label(game_over_root, "Score %d" % last_score, Vector2(480, 260), 28, Color.WHITE, true)
+	if won:
+		_add_label(game_over_root, "Lives Remaining %d" % last_lives, Vector2(480, 302), 20, Color("#ffe964"), true)
 	_add_label(game_over_root, "Press Enter or Start to return to menu", Vector2(480, 346), 22, Color("#ffe964"), true)
 
 func _clear_level() -> void:

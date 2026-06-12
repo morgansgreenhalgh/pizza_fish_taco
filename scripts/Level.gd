@@ -1,10 +1,13 @@
 extends Node2D
 class_name Level
 
-signal level_finished(won: bool, score: int)
+signal level_finished(won: bool, score: int, lives: int)
+signal restart_requested
+signal menu_requested
 
 const PlayerScene := preload("res://scenes/Player.tscn")
 const EnemyScene := preload("res://scenes/Enemy.tscn")
+const PickupScene := preload("res://scripts/Pickup.gd")
 const HUDScript := preload("res://scripts/HUD.gd")
 const InputSetupScript := preload("res://scripts/InputSetup.gd")
 
@@ -24,6 +27,10 @@ var gate_visual: ColorRect
 var gate_locked := false
 var gate_pulse_time := 0.0
 var boss_intro_running := false
+var pause_layer: CanvasLayer
+var level_clear_layer: CanvasLayer
+var gameplay_paused := false
+var level_ending := false
 var waves := [
 	{"trigger": 260.0, "gate": 850.0, "spawned": false, "enemies": [{"kind": "burger_grunt", "x": 640.0}, {"kind": "burger_grunt", "x": 770.0}]},
 	{"trigger": 880.0, "gate": 1390.0, "spawned": false, "enemies": [{"kind": "burger_grunt", "x": 1180.0}, {"kind": "fry_goblin", "x": 1280.0}]},
@@ -31,10 +38,12 @@ var waves := [
 ]
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	InputSetupScript.configure()
 	_build_background()
 	_build_ground()
 	player = PlayerScene.instantiate()
+	player.process_mode = Node.PROCESS_MODE_PAUSABLE
 	player.global_position = Vector2(130, GROUND_Y - 76)
 	add_child(player)
 	player.stats_changed.connect(_on_player_stats_changed)
@@ -59,6 +68,10 @@ func _ready() -> void:
 	hud.show_status("SNACK CITY STREETS", 2.0)
 
 func _process(delta: float) -> void:
+	if Input.is_action_just_pressed("pause") and not level_ending:
+		_toggle_pause()
+	if gameplay_paused:
+		return
 	_spawn_waves()
 	_spawn_boss_if_ready()
 	_update_active_wave()
@@ -98,6 +111,7 @@ func _spawn_boss_if_ready() -> void:
 
 func _spawn_enemy(kind: String, x: float) -> Node:
 	var enemy := EnemyScene.instantiate()
+	enemy.process_mode = Node.PROCESS_MODE_PAUSABLE
 	enemy.configure(kind, player)
 	enemy.global_position = Vector2(x, GROUND_Y - (112 if kind == "big_bad_burger" else 58) + randf_range(-2, 2))
 	add_child(enemy)
@@ -115,8 +129,9 @@ func _on_enemy_defeated(enemy: Node) -> void:
 		hud.update_boss(enemy.display_name, 0, enemy.max_health, false)
 		_unlock_gate()
 		await get_tree().create_timer(0.9).timeout
-		level_finished.emit(true, player.score)
+		_show_level_clear()
 	else:
+		_maybe_spawn_pickup(enemy.global_position + Vector2(0, -24))
 		active_wave_enemies.erase(enemy)
 		_update_active_wave()
 
@@ -211,7 +226,108 @@ func _on_score_changed(score: int) -> void:
 func _on_player_died() -> void:
 	if player.lives <= 0:
 		await get_tree().create_timer(1.1).timeout
-		level_finished.emit(false, player.score)
+		level_finished.emit(false, player.score, player.lives)
+
+func _maybe_spawn_pickup(pos: Vector2) -> void:
+	var roll := randf()
+	if roll > 0.45:
+		return
+	var kind := "score"
+	var value := 250
+	if roll < 0.12 and player.health < player.max_health:
+		kind = "health"
+		value = 28
+	elif roll < 0.28:
+		kind = "special"
+		value = 26
+	_spawn_pickup(kind, value, pos)
+
+func _spawn_pickup(kind: String, value: int, pos: Vector2) -> void:
+	var pickup := PickupScene.new()
+	pickup.process_mode = Node.PROCESS_MODE_PAUSABLE
+	pickup.configure(kind, value)
+	pickup.global_position = pos
+	add_child(pickup)
+	pickup.collected.connect(_on_pickup_collected)
+
+func _on_pickup_collected(pickup: Node, body: Node) -> void:
+	if pickup.pickup_type == "health":
+		body.heal(pickup.value)
+		hud.show_status("+HEALTH", 0.8, Color("#69ff7b"))
+	elif pickup.pickup_type == "special":
+		body.add_special(pickup.value)
+		hud.show_status("+SAUCE", 0.8, Color("#34c9ff"))
+	else:
+		body.add_score(pickup.value)
+		hud.show_status("+%d" % pickup.value, 0.8, Color("#ffe964"))
+	_spawn_pickup_burst(pickup.global_position, pickup.pickup_type)
+
+func _toggle_pause() -> void:
+	if level_clear_layer:
+		return
+	gameplay_paused = not gameplay_paused
+	get_tree().paused = gameplay_paused
+	if gameplay_paused:
+		_show_pause()
+	else:
+		_hide_pause()
+
+func _show_pause() -> void:
+	pause_layer = CanvasLayer.new()
+	pause_layer.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(pause_layer)
+	_add_rect_to(pause_layer, Vector2.ZERO, Vector2(960, 540), Color(0, 0, 0, 0.58))
+	_add_rect_to(pause_layer, Vector2(250, 110), Vector2(460, 300), Color("#170b14"), Color("#f7dfb4"), 4)
+	_add_label_to(pause_layer, "PAUSED", Vector2(480, 142), 42, Color("#ffe964"), true)
+	_add_label_to(pause_layer, "Esc / Start: Resume", Vector2(480, 220), 22, Color.WHITE, true)
+	_add_label_to(pause_layer, "R: Restart Level", Vector2(480, 264), 22, Color.WHITE, true)
+	_add_label_to(pause_layer, "M: Return To Menu", Vector2(480, 308), 22, Color.WHITE, true)
+	_add_label_to(pause_layer, "J Combo  K Heavy  L Sauce Spin", Vector2(480, 362), 16, Color("#37e6ff"), true)
+
+func _hide_pause() -> void:
+	if pause_layer and is_instance_valid(pause_layer):
+		pause_layer.queue_free()
+	pause_layer = null
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not gameplay_paused:
+		return
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.physical_keycode == KEY_R:
+			_hide_pause()
+			get_tree().paused = false
+			gameplay_paused = false
+			restart_requested.emit()
+		elif event.physical_keycode == KEY_M:
+			_hide_pause()
+			get_tree().paused = false
+			gameplay_paused = false
+			menu_requested.emit()
+
+func _show_level_clear() -> void:
+	level_ending = true
+	var base_score: int = player.score
+	var lives_bonus: int = max(0, player.lives) * 500
+	var final_score: int = base_score + lives_bonus
+	player.add_score(lives_bonus)
+	level_clear_layer = CanvasLayer.new()
+	level_clear_layer.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(level_clear_layer)
+	_add_rect_to(level_clear_layer, Vector2.ZERO, Vector2(960, 540), Color(0.02, 0.08, 0.04, 0.68))
+	_add_rect_to(level_clear_layer, Vector2(210, 112), Vector2(540, 318), Color("#102316"), Color("#69ff7b"), 4)
+	_add_label_to(level_clear_layer, "SNACK CITY STREETS CLEARED", Vector2(480, 148), 30, Color("#69ff7b"), true)
+	_add_label_to(level_clear_layer, "Score %06d" % base_score, Vector2(480, 224), 24, Color.WHITE, true)
+	_add_label_to(level_clear_layer, "Lives Bonus %06d" % lives_bonus, Vector2(480, 270), 24, Color("#ffe964"), true)
+	_add_label_to(level_clear_layer, "Final %06d" % final_score, Vector2(480, 326), 30, Color("#37e6ff"), true)
+	_add_label_to(level_clear_layer, "Press Enter / Start", Vector2(480, 386), 22, Color.WHITE, true)
+	await _wait_for_start()
+	level_finished.emit(true, final_score, player.lives)
+
+func _wait_for_start() -> void:
+	while true:
+		await get_tree().process_frame
+		if Input.is_action_just_pressed("start") or Input.is_action_just_pressed("pause"):
+			return
 
 func _build_background() -> void:
 	_add_rect(Vector2(0, 0), Vector2(WORLD_WIDTH, GAME_HEIGHT), Color("#180716"))
@@ -299,6 +415,24 @@ func _spawn_crumb_burst(pos: Vector2) -> void:
 		tween.parallel().tween_property(crumb, "modulate:a", 0.0, 0.42)
 		tween.tween_callback(crumb.queue_free)
 
+func _spawn_pickup_burst(pos: Vector2, kind: String) -> void:
+	var color := Color("#ffe071")
+	if kind == "health":
+		color = Color("#69ff7b")
+	elif kind == "special":
+		color = Color("#34c9ff")
+	for i in range(8):
+		var sparkle := Polygon2D.new()
+		sparkle.polygon = PackedVector2Array([Vector2(0, -6), Vector2(4, 0), Vector2(0, 6), Vector2(-4, 0)])
+		sparkle.color = color
+		sparkle.position = pos
+		add_child(sparkle)
+		var target := pos + Vector2(randf_range(-34, 34), randf_range(-36, 10))
+		var tween := create_tween()
+		tween.tween_property(sparkle, "position", target, 0.32)
+		tween.parallel().tween_property(sparkle, "modulate:a", 0.0, 0.32)
+		tween.tween_callback(sparkle.queue_free)
+
 func _hit_stop(duration: float) -> void:
 	if Engine.time_scale < 1.0:
 		return
@@ -341,4 +475,35 @@ func _add_label(text: String, pos: Vector2, size: int, color: Color) -> Label:
 	label.add_theme_constant_override("shadow_offset_x", 3)
 	label.add_theme_constant_override("shadow_offset_y", 3)
 	add_child(label)
+	return label
+
+func _add_rect_to(parent: Node, pos: Vector2, size: Vector2, color: Color, outline := Color.TRANSPARENT, outline_width := 0) -> ColorRect:
+	var rect := ColorRect.new()
+	rect.position = pos
+	rect.size = size
+	rect.color = color
+	parent.add_child(rect)
+	if outline_width > 0:
+		var line := Line2D.new()
+		line.points = PackedVector2Array([pos, pos + Vector2(size.x, 0), pos + size, pos + Vector2(0, size.y)])
+		line.closed = true
+		line.width = outline_width
+		line.default_color = outline
+		parent.add_child(line)
+	return rect
+
+func _add_label_to(parent: Node, text: String, pos: Vector2, size: int, color: Color, centered := false) -> Label:
+	var label := Label.new()
+	label.text = text
+	label.position = pos
+	label.add_theme_font_size_override("font_size", size)
+	label.add_theme_color_override("font_color", color)
+	label.add_theme_color_override("font_shadow_color", Color.BLACK)
+	label.add_theme_constant_override("shadow_offset_x", 3)
+	label.add_theme_constant_override("shadow_offset_y", 3)
+	if centered:
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.size = Vector2(720, 40)
+		label.position.x -= 360
+	parent.add_child(label)
 	return label
