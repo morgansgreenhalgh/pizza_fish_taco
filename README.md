@@ -22,6 +22,7 @@ Godot Phase 1 slice:
 - Wave gates and boss arena gate
 - Enemy health bars, damage numbers, hit sparks, crumb bursts, hit pause, camera shake
 - Boss intro and multiple boss attack patterns
+- Animation-ready procedural player art with named states
 - Procedural placeholder art ready to be replaced by sprite sheets
 
 ## Run In Godot
@@ -70,7 +71,6 @@ Controller:
 ## Next Phase 1 Work
 
 - Tune enemy AI spacing and boss attacks after hands-on play
-- Add real placeholder animation tracks for idle, run, jump, hurt, combo, heavy, Sauce Spin, and death
 - Replace procedural sprites with imported sprite sheets
 - Add pickups and a simple pause menu
 - Polish the first-level win flow
@@ -78,6 +78,7 @@ Controller:
 ## Repository Notes
 
 - `scenes/` and `scripts/` are the Godot game.
+- `assets/` is the destination for authored art and sprite sheets.
 - `tools/` contains headless smoke tests.
 - `src/`, `package.json`, and Vite files are the earlier Phaser prototype.
 - `node_modules/`, `dist/`, and Godot cache folders are ignored.

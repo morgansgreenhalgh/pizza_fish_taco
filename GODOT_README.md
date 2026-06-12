@@ -37,6 +37,7 @@ Controller:
 - Wave gates and boss arena flow
 - Enemy health bars, damage numbers, hit sparks, crumb bursts, hit pause, and camera shake
 - Smarter enemy spacing, cooldown retreat, interruptible windups, and multiple boss attacks
+- Animation-ready procedural player art with named states and strike-frame hitbox timing
 - Generated placeholder art built in scripts, ready to be replaced by sprite sheets later
 
 ## Validation
