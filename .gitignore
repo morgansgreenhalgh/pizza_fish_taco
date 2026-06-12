@@ -1,0 +1,9 @@
+.godot/
+.import/
+*.tmp
+*.translation
+export_presets.cfg
+
+# Existing Phaser prototype outputs
+dist/
+node_modules/
