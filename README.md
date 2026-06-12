@@ -23,6 +23,7 @@ Godot Phase 1 slice:
 - Enemy health bars, damage numbers, hit sparks, crumb bursts, hit pause, camera shake
 - Boss intro and multiple boss attack patterns
 - Imported Pizza Fish Taco animation frames with procedural fallback
+- Imported Burger Grunt animation frames with procedural fallback for other enemies
 - Health, sauce, and score pickups
 - Pause menu with resume, restart, return-to-menu, and controls
 - Level-clear panel with score and lives bonus
@@ -68,6 +69,7 @@ Controller:
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --quit-after 3
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' 'res://scenes/Level.tscn' --quit-after 4
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/player_art_smoke_test.gd'
+& 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/enemy_art_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/combat_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/boss_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/pickup_smoke_test.gd'
@@ -77,7 +79,7 @@ Controller:
 
 - Tune enemy AI spacing and boss attacks after hands-on play
 - Tune Pizza Fish Taco sprite animation offsets and timing after hands-on play
-- Replace enemy placeholders with imported Burger Grunt and Fry Goblin sprite sheets
+- Generate and wire Fry Goblin and Big Bad Burger sprite sheets
 - Add richer pickup drop tuning and pickup-specific art
 - Add controller navigation for pause menu choices
 

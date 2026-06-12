@@ -7,6 +7,21 @@ signal attack_started(enemy: Enemy, warning_position: Vector2, warning_size: Vec
 signal attack_committed(enemy: Enemy)
 
 const GRAVITY := 1900.0
+const BURGER_GRUNT_FRAME_DIR := "res://assets/enemies/burger_grunt/frames/"
+const BURGER_GRUNT_FRAME_NAMES := [
+	"idle_0",
+	"walk_0",
+	"walk_1",
+	"windup_0",
+	"attack_0",
+	"hurt_0",
+	"knockback_0",
+	"defeated_0",
+	"taunt_0",
+	"run_0",
+	"stunned_0",
+	"recover_0",
+]
 
 var kind := "burger_grunt"
 var display_name := "Burger Grunt"
@@ -29,6 +44,13 @@ var retreat_until := 0.0
 var next_ai_decision_at := 0.0
 var preferred_side := 1
 var boss_attack_index := 0
+var using_sprite_art := false
+var sprite: Sprite2D
+var sprite_textures := {}
+var current_art_pose := ""
+var art_frames: Array = []
+var art_frame_index := 0
+var art_elapsed := 0.0
 
 @onready var art_root := Node2D.new()
 
@@ -62,6 +84,20 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0.0, 1600.0 * delta)
 
 	move_and_slide()
+	_update_art_pose()
+
+func _process(delta: float) -> void:
+	if not using_sprite_art or art_frames.is_empty():
+		return
+	art_elapsed += delta
+	var frame: Dictionary = art_frames[art_frame_index]
+	if art_elapsed < frame.get("duration", 0.12):
+		return
+	art_elapsed = 0.0
+	art_frame_index += 1
+	if art_frame_index >= art_frames.size():
+		art_frame_index = 0 if _art_pose_loops(current_art_pose) else art_frames.size() - 1
+	_apply_art_frame()
 
 func _update_ai(delta: float) -> void:
 	var now := Time.get_ticks_msec() / 1000.0
@@ -123,6 +159,7 @@ func receive_damage(amount: int, knockback: Vector2, source_x: float) -> void:
 	attack_serial += 1
 	art_root.modulate = Color.WHITE
 	art_root.rotation_degrees = 0
+	_set_art_pose("hurt", true)
 	health_changed.emit(self, amount)
 	_update_health_bar()
 
@@ -149,12 +186,14 @@ func _try_attack() -> void:
 	attack_started.emit(self, warning_pos, warning_size)
 	art_root.modulate = Color(1.0, 0.38, 0.3) if is_boss else Color(1.0, 0.85, 0.35)
 	art_root.rotation_degrees = -attack.windup_tilt * facing
+	_set_art_pose("windup", true)
 	await get_tree().create_timer(attack.windup).timeout
 	if is_dead or is_hurt or this_attack != attack_serial:
 		return
 	attack_committed.emit(self)
 	velocity.x = facing * attack.lunge_speed
 	art_root.rotation_degrees = attack.commit_tilt * facing
+	_set_art_pose("attack", true)
 	if is_boss and attack.name == "sauce_slam":
 		velocity.y = -220
 	await get_tree().create_timer(attack.commit_time).timeout
@@ -242,6 +281,7 @@ func _die() -> void:
 	if health_back:
 		health_back.visible = false
 	art_root.modulate = Color(0.35, 0.35, 0.35)
+	_set_art_pose("defeated", true)
 	velocity = Vector2(0, -260)
 	await get_tree().create_timer(0.55).timeout
 	queue_free()
@@ -276,6 +316,8 @@ func _build_collision() -> void:
 func _build_art() -> void:
 	var scale_size := 1.9 if is_boss else 1.0
 	art_root.scale = Vector2(scale_size, scale_size)
+	if _build_sprite_art():
+		return
 	var bun := Color("#f0b14b")
 	var patty := Color("#7d3520") if is_boss else Color("#bd6a2c")
 	if kind == "fry_goblin":
@@ -295,6 +337,94 @@ func _build_art() -> void:
 	if is_boss:
 		_add_poly(PackedVector2Array([Vector2(-44, -52), Vector2(-20, -36), Vector2(-37, -28)]), Color("#ff4d2a"), true)
 		_add_poly(PackedVector2Array([Vector2(44, -52), Vector2(20, -36), Vector2(37, -28)]), Color("#ff4d2a"), true)
+
+func _build_sprite_art() -> bool:
+	if kind != "burger_grunt":
+		return false
+	for frame_name in BURGER_GRUNT_FRAME_NAMES:
+		var path: String = BURGER_GRUNT_FRAME_DIR + str(frame_name) + ".png"
+		var texture := _load_png_texture(path)
+		if texture != null:
+			sprite_textures[frame_name] = texture
+	if not sprite_textures.has("idle_0"):
+		return false
+
+	using_sprite_art = true
+	sprite = Sprite2D.new()
+	sprite.texture = sprite_textures.idle_0
+	sprite.centered = true
+	sprite.position = Vector2(0, -2)
+	art_root.add_child(sprite)
+	_set_art_pose("idle", true)
+	return true
+
+func _load_png_texture(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		var imported_texture := load(path)
+		if imported_texture is Texture2D:
+			return imported_texture
+
+	var image := Image.new()
+	var error := image.load(ProjectSettings.globalize_path(path))
+	if error != OK:
+		return null
+	return ImageTexture.create_from_image(image)
+
+func _update_art_pose() -> void:
+	if not using_sprite_art or is_dead or is_hurt or is_attacking:
+		return
+	if abs(velocity.x) > 18.0:
+		_set_art_pose("walk")
+	else:
+		_set_art_pose("idle")
+
+func _set_art_pose(pose: String, force := false) -> void:
+	if not using_sprite_art:
+		return
+	if current_art_pose == pose and not force:
+		return
+	current_art_pose = pose
+	art_frames = _art_frames_for(pose)
+	art_frame_index = 0
+	art_elapsed = 0.0
+	_apply_art_frame()
+
+func _art_frames_for(pose: String) -> Array:
+	match pose:
+		"idle":
+			return [
+				{"texture": "idle_0", "duration": 0.28},
+				{"texture": "taunt_0", "duration": 0.18},
+				{"texture": "idle_0", "duration": 0.34},
+			]
+		"walk":
+			return [
+				{"texture": "walk_0", "duration": 0.12},
+				{"texture": "walk_1", "duration": 0.12},
+			]
+		"windup":
+			return [{"texture": "windup_0", "duration": 0.2}]
+		"attack":
+			return [{"texture": "attack_0", "duration": 0.16}]
+		"hurt":
+			return [
+				{"texture": "hurt_0", "duration": 0.12},
+				{"texture": "knockback_0", "duration": 0.12},
+			]
+		"defeated":
+			return [{"texture": "defeated_0", "duration": 0.4}]
+	return [{"texture": "idle_0", "duration": 0.2}]
+
+func _art_pose_loops(pose: String) -> bool:
+	return pose in ["idle", "walk"]
+
+func _apply_art_frame() -> void:
+	if not using_sprite_art or art_frames.is_empty():
+		return
+	var frame: Dictionary = art_frames[art_frame_index]
+	var texture_key: String = frame.get("texture", "idle_0")
+	if sprite_textures.has(texture_key):
+		sprite.texture = sprite_textures[texture_key]
 
 func _build_health_bar() -> void:
 	var y := -98 if is_boss else -56
