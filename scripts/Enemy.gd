@@ -490,9 +490,36 @@ func _apply_art_frame() -> void:
 	var texture_key: String = frame.get("texture", "idle_0")
 	if sprite_textures.has(texture_key):
 		sprite.texture = sprite_textures[texture_key]
+	_apply_sprite_metrics()
+
+func _apply_sprite_metrics() -> void:
+	if not sprite or not sprite.texture:
+		return
+	var sprite_scale := _sprite_art_scale()
+	var texture_size := sprite.texture.get_size()
+	sprite.scale = sprite_scale
+	sprite.position = Vector2(0, _sprite_ground_bottom() - texture_size.y * sprite_scale.y * 0.5)
+
+func _sprite_art_scale() -> Vector2:
+	if kind == "big_bad_burger":
+		return Vector2(1.18, 1.18)
+	if kind == "fry_goblin":
+		return Vector2(0.9, 0.9)
+	if kind == "burger_grunt":
+		return Vector2(0.92, 0.92)
+	return Vector2.ONE
+
+func _sprite_ground_bottom() -> float:
+	if kind == "big_bad_burger":
+		return 68.0
+	if kind == "fry_goblin":
+		return 34.0
+	if kind == "burger_grunt":
+		return 37.0
+	return 38.0
 
 func _build_health_bar() -> void:
-	var y := -98 if is_boss else -56
+	var y := -128 if is_boss and using_sprite_art else (-98 if is_boss else -56)
 	var width := 84 if is_boss else 46
 	health_back = ColorRect.new()
 	health_back.position = Vector2(-width * 0.5, y)

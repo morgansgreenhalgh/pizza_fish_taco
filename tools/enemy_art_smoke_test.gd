@@ -34,6 +34,22 @@ func _run() -> void:
 		push_error("enemy_art_smoke_test: Big Bad Burger fell back to procedural shapes")
 		quit(1)
 		return
+	if burger.sprite.scale.x >= 1.0:
+		push_error("enemy_art_smoke_test: Burger Grunt sprite should be slightly scaled down")
+		quit(1)
+		return
+	if fry.sprite.scale.x >= burger.sprite.scale.x:
+		push_error("enemy_art_smoke_test: Fry Goblin should be smaller than Burger Grunt")
+		quit(1)
+		return
+	if boss.sprite.scale.x <= 1.0:
+		push_error("enemy_art_smoke_test: Big Bad Burger should be scaled up for boss presence")
+		quit(1)
+		return
+	if boss.health_back.position.y > -110:
+		push_error("enemy_art_smoke_test: Boss health bar overlaps imported boss sprite")
+		quit(1)
+		return
 
-	print("enemy_art_smoke_test: burger_sprite=true texture_size=", burger.sprite.texture.get_size(), " fry_sprite=true texture_size=", fry.sprite.texture.get_size(), " boss_sprite=true texture_size=", boss.sprite.texture.get_size())
+	print("enemy_art_smoke_test: burger_scale=", burger.sprite.scale, " fry_scale=", fry.sprite.scale, " boss_scale=", boss.sprite.scale, " boss_health_y=", boss.health_back.position.y)
 	quit()
