@@ -9,6 +9,7 @@ signal attack_committed(enemy: Enemy)
 const GRAVITY := 1900.0
 const BURGER_GRUNT_FRAME_DIR := "res://assets/enemies/burger_grunt/frames/"
 const FRY_GOBLIN_FRAME_DIR := "res://assets/enemies/fry_goblin/frames/"
+const BIG_BAD_BURGER_FRAME_DIR := "res://assets/bosses/big_bad_burger/frames/"
 const ENEMY_FRAME_NAMES := [
 	"idle_0",
 	"walk_0",
@@ -22,6 +23,20 @@ const ENEMY_FRAME_NAMES := [
 	"run_0",
 	"stunned_0",
 	"recover_0",
+]
+const BIG_BAD_BURGER_FRAME_NAMES := [
+	"idle_0",
+	"walk_0",
+	"walk_1",
+	"chomp_windup_0",
+	"chomp_attack_0",
+	"charge_windup_0",
+	"charge_attack_0",
+	"slam_windup_0",
+	"slam_impact_0",
+	"hurt_0",
+	"stunned_0",
+	"defeated_0",
 ]
 
 var kind := "burger_grunt"
@@ -52,6 +67,7 @@ var current_art_pose := ""
 var art_frames: Array = []
 var art_frame_index := 0
 var art_elapsed := 0.0
+var current_attack_name := ""
 
 @onready var art_root := Node2D.new()
 
@@ -104,7 +120,7 @@ func _update_ai(delta: float) -> void:
 	var now := Time.get_ticks_msec() / 1000.0
 	var dx := target.global_position.x - global_position.x
 	facing = 1 if dx >= 0 else -1
-	art_root.scale.x = facing
+	_apply_art_root_scale()
 
 	var attack_range := 118.0 if is_boss else 62.0
 	var crowding := _is_crowded_near_player()
@@ -181,6 +197,7 @@ func _try_attack() -> void:
 	attack_serial += 1
 	var this_attack := attack_serial
 	var attack := _attack_profile()
+	current_attack_name = attack.name
 	attack_cooldown_until = now + attack.cooldown
 	var warning_size: Vector2 = attack.warning_size
 	var warning_pos := global_position + Vector2(facing * warning_size.x * 0.45, -6)
@@ -210,6 +227,7 @@ func _try_attack() -> void:
 	await get_tree().create_timer(attack.recovery).timeout
 	if this_attack == attack_serial:
 		is_attacking = false
+		current_attack_name = ""
 
 func _attack_profile() -> Dictionary:
 	if not is_boss:
@@ -315,8 +333,7 @@ func _build_collision() -> void:
 	add_child(collision)
 
 func _build_art() -> void:
-	var scale_size := 1.9 if is_boss else 1.0
-	art_root.scale = Vector2(scale_size, scale_size)
+	_apply_art_root_scale()
 	if _build_sprite_art():
 		return
 	var bun := Color("#f0b14b")
@@ -343,7 +360,7 @@ func _build_sprite_art() -> bool:
 	var frame_dir := _frame_dir_for_kind()
 	if frame_dir == "":
 		return false
-	for frame_name in ENEMY_FRAME_NAMES:
+	for frame_name in _frame_names_for_kind():
 		var path: String = frame_dir + str(frame_name) + ".png"
 		var texture := _load_png_texture(path)
 		if texture != null:
@@ -352,6 +369,7 @@ func _build_sprite_art() -> bool:
 		return false
 
 	using_sprite_art = true
+	_apply_art_root_scale()
 	sprite = Sprite2D.new()
 	sprite.texture = sprite_textures.idle_0
 	sprite.centered = true
@@ -365,7 +383,23 @@ func _frame_dir_for_kind() -> String:
 		return BURGER_GRUNT_FRAME_DIR
 	if kind == "fry_goblin":
 		return FRY_GOBLIN_FRAME_DIR
+	if kind == "big_bad_burger":
+		return BIG_BAD_BURGER_FRAME_DIR
 	return ""
+
+func _frame_names_for_kind() -> Array:
+	if kind == "big_bad_burger":
+		return BIG_BAD_BURGER_FRAME_NAMES
+	return ENEMY_FRAME_NAMES
+
+func _base_art_scale() -> Vector2:
+	if is_boss and not using_sprite_art:
+		return Vector2(1.9, 1.9)
+	return Vector2.ONE
+
+func _apply_art_root_scale() -> void:
+	var base_scale := _base_art_scale()
+	art_root.scale = Vector2(base_scale.x * facing, base_scale.y)
 
 func _load_png_texture(path: String) -> Texture2D:
 	if ResourceLoader.exists(path):
@@ -418,8 +452,24 @@ func _art_frames_for(pose: String) -> Array:
 				{"texture": "walk_1", "duration": 0.12},
 			]
 		"windup":
+			if kind == "big_bad_burger":
+				match current_attack_name:
+					"mega_chomp":
+						return [{"texture": "chomp_windup_0", "duration": 0.2}]
+					"burger_charge":
+						return [{"texture": "charge_windup_0", "duration": 0.2}]
+					"sauce_slam":
+						return [{"texture": "slam_windup_0", "duration": 0.2}]
 			return [{"texture": "windup_0", "duration": 0.2}]
 		"attack":
+			if kind == "big_bad_burger":
+				match current_attack_name:
+					"mega_chomp":
+						return [{"texture": "chomp_attack_0", "duration": 0.16}]
+					"burger_charge":
+						return [{"texture": "charge_attack_0", "duration": 0.16}]
+					"sauce_slam":
+						return [{"texture": "slam_impact_0", "duration": 0.16}]
 			return [{"texture": "attack_0", "duration": 0.16}]
 		"hurt":
 			return [
@@ -469,7 +519,8 @@ func _update_health_bar() -> void:
 
 func _spawn_pop() -> void:
 	art_root.scale *= 0.72
-	var target_scale := Vector2(1.9, 1.9) if is_boss else Vector2.ONE
+	var target_scale := _base_art_scale()
+	target_scale.x *= facing
 	var tween := create_tween()
 	tween.set_trans(Tween.TRANS_BACK)
 	tween.set_ease(Tween.EASE_OUT)

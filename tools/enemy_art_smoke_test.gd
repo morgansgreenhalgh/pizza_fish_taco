@@ -30,10 +30,10 @@ func _run() -> void:
 	root.add_child(boss)
 	await process_frame
 
-	if boss.using_sprite_art:
-		push_error("enemy_art_smoke_test: Big Bad Burger should remain procedural until its sheet exists")
+	if not boss.using_sprite_art:
+		push_error("enemy_art_smoke_test: Big Bad Burger fell back to procedural shapes")
 		quit(1)
 		return
 
-	print("enemy_art_smoke_test: burger_sprite=true texture_size=", burger.sprite.texture.get_size(), " fry_sprite=true texture_size=", fry.sprite.texture.get_size(), " boss_sprite=false")
+	print("enemy_art_smoke_test: burger_sprite=true texture_size=", burger.sprite.texture.get_size(), " fry_sprite=true texture_size=", fry.sprite.texture.get_size(), " boss_sprite=true texture_size=", boss.sprite.texture.get_size())
 	quit()
