@@ -26,6 +26,7 @@ Godot Phase 1 slice:
 - Imported Burger Grunt, Fry Goblin, and Big Bad Burger animation frames
 - Polished procedural Snack City Streets background with neon signs and food props
 - Health, sauce, and score pickups
+- Polished arcade-style HUD, ability bar, menu, and game-over screens
 - Pause menu with resume, restart, return-to-menu, and controls
 - Level-clear panel with score and lives bonus
 - Placeholder pickup art ready to be replaced by authored sprites
@@ -69,6 +70,7 @@ Controller:
 ```powershell
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --quit-after 3
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' 'res://scenes/Level.tscn' --quit-after 4
+& 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/ui_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/background_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/player_art_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/enemy_art_smoke_test.gd'
@@ -84,7 +86,7 @@ Controller:
 - Tune imported enemy and boss sprite offsets, scale, and attack pose timing
 - Add true parallax layers and authored Snack City prop sprites
 - Add richer pickup drop tuning and pickup-specific art
-- Add controller navigation for pause menu choices
+- Add controller navigation for pause/menu choices
 
 ## Repository Notes
 

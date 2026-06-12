@@ -41,6 +41,7 @@ Controller:
 - Imported Burger Grunt, Fry Goblin, and Big Bad Burger animation frames
 - Polished procedural Snack City Streets background with neon signs and food props
 - Health, sauce, and score pickups
+- Polished arcade-style HUD, ability bar, menu, and game-over screens
 - Pause menu and level-clear scoring panel
 - Generated placeholder pickup art, ready to be replaced by authored sprites later
 
@@ -49,6 +50,7 @@ Controller:
 ```powershell
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --quit-after 3
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' 'res://scenes/Level.tscn' --quit-after 4
+& 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/ui_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/background_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/player_art_smoke_test.gd'
 & 'C:\Tools\Godot\godot.exe' --headless --path 'C:\dev\pizza_fish_taco' --script 'res://tools/enemy_art_smoke_test.gd'
