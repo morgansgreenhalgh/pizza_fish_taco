@@ -94,5 +94,6 @@ Controller:
 - `scenes/` and `scripts/` are the Godot game.
 - `assets/` is the destination for authored art and sprite sheets.
 - `tools/` contains headless smoke tests and art-processing helpers.
+- `HANDOFF.md` is the quick-start handoff for the next development session.
 - `src/`, `package.json`, and Vite files are the earlier Phaser prototype.
 - `node_modules/`, `dist/`, and Godot cache folders are ignored.
